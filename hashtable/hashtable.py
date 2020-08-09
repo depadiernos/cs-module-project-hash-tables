@@ -47,7 +47,8 @@ class HashTable:
         Implement this.
         """
         # Your code here
-        return self.size / self.get_num_slots()
+        load = self.size / self.get_num_slots()
+        return load
 
     def fnv1(self, key):
         """
@@ -92,7 +93,7 @@ class HashTable:
         # Initial no collision checking implementation
         # self.storage[index] = value
 
-        if self.storage[index] != None:
+        if self.storage[index] is not None:
             current_index = self.storage[index]
             while current_index.next != None and current_index.key != key:
                 current_index = current_index.next
@@ -100,9 +101,12 @@ class HashTable:
                 current_index.value = value
             else:
                 current_index.next = HashTableEntry(key, value)
+                self.size += 1
         else:
             self.storage[index] = HashTableEntry(key, value)
-
+            self.size += 1
+        if self.get_load_factor() >= 0.7:
+            self.resize(self.capacity * 2)
         
     def delete(self, key):
         """
@@ -121,6 +125,7 @@ class HashTable:
         while current_index != None:
             if current_index.key == key:
                 current_index.value = None
+                self.size -= 1
                 return
             current_index = current_index.next
         print("Not Found")
@@ -160,7 +165,19 @@ class HashTable:
         Implement this.
         """
         # Your code here
+        if new_capacity < MIN_CAPACITY:
+            new_capacity = MIN_CAPACITY
 
+        old_storage = self.storage
+        self.capacity = new_capacity
+        self.storage = [None] * new_capacity
+        self.size = 0
+
+        for item in old_storage:
+            current = item
+            while current:
+                self.put(current.key, current.value)
+                current = current.next
 
 
 if __name__ == "__main__":
