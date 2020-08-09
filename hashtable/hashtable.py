@@ -24,6 +24,7 @@ class HashTable:
         # Your code here
         self.capacity = capacity if capacity >= MIN_CAPACITY else MIN_CAPACITY
         self.storage = [None] * self.capacity
+        self.size = 0
 
     def get_num_slots(self):
         """
@@ -46,7 +47,7 @@ class HashTable:
         Implement this.
         """
         # Your code here
-        
+        return self.size / self.get_num_slots()
 
     def fnv1(self, key):
         """
@@ -88,7 +89,20 @@ class HashTable:
         """
         # Your code here
         index = self.hash_index(key)
-        self.storage[index] = value
+        # Initial no collision checking implementation
+        # self.storage[index] = value
+
+        if self.storage[index] != None:
+            current_index = self.storage[index]
+            while current_index.next != None and current_index.key != key:
+                current_index = current_index.next
+            if current_index.key == key:
+                current_index.value = value
+            else:
+                current_index.next = HashTableEntry(key, value)
+        else:
+            self.storage[index] = HashTableEntry(key, value)
+
         
     def delete(self, key):
         """
@@ -100,7 +114,18 @@ class HashTable:
         """
         # Your code here
         index = self.hash_index(key)
-        self.storage[index] = None
+        # Initial no collision checking implementation
+        # self.storage[index] = None
+
+        current_index = self.storage[index]
+        while current_index != None:
+            if current_index.key == key:
+                current_index.value = None
+                return
+            current_index = current_index.next
+        print("Not Found")
+        return None
+                
 
     def get(self, key):
         """
@@ -112,7 +137,20 @@ class HashTable:
         """
         # Your code here
         index = self.hash_index(key)
-        return self.storage[index]
+        # Initial no collision checking implementation
+        # return self.storage[index]
+
+        current_index = self.storage[index]
+        if current_index is not None:
+            while current_index.key != key and current_index.next != None:
+                current_index = current_index.next
+            if current_index.key == key:
+                return current_index.value
+            else:
+                return None
+        else:
+            return None
+            
 
     def resize(self, new_capacity):
         """
