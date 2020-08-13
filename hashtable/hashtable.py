@@ -151,8 +151,7 @@ class HashTable:
                 current_index = current_index.next
             if current_index.key == key:
                 return current_index.value
-            else:
-                return None
+            return None
         else:
             return None
             
